@@ -1,0 +1,60 @@
+//function.php
+
+// ajax coupon apply
+add_action('wp_ajax_nopriv_apply_matched_coupons','apply_matched_coupons');
+add_action('wp_ajax_apply_matched_coupons','apply_matched_coupons');
+
+function apply_matched_coupons() {
+    global $woocommerce;
+
+
+   $coupon_code = $_POST['coupon_code']; // your coupon code here
+
+    if ( $woocommerce->cart->has_discount( $coupon_code ) ) { 
+        $woocommerce->cart->add_discount( $coupon_code );
+         echo $woocommerce->show_messages();
+  
+	}
+        die();
+
+}
+
+
+
+//script.js
+
+
+            $(document).on('click','#woocommerce_widget_cart-2 input[name="mini_apply_coupon"]',function(){
+               // console.log('hello this is shit !');
+                var coupon   = $('#mini_coupon_code').val();
+                var ajax_url = $(this).data('url');
+                console.log(coupon+" "+ajax_url);
+                $.ajax({
+                    url: ajax_url,
+
+                    type:'post',
+
+                   
+                    data:{
+
+                        coupon_code : coupon,
+
+                        action : 'apply_matched_coupons',
+
+                    },
+                    error: function(response) {
+
+                        console.log("error: ");
+                        console.log(response);
+
+                    },
+                    success: function(html) {
+                       
+                        console.log("success: "); 
+                        console.log(html); 
+                        
+                    },
+                });
+
+                return false;
+            });
